@@ -98,6 +98,27 @@ async function generateStructured<T>(
   return call.input as T;
 }
 
+const MIN_WEEKS = 8;
+const RETRY_INSTRUCTION = `
+
+REMINDER: Your previous attempt was incomplete. You MUST output a full plan of at least ${MIN_WEEKS} weeks, each with 3-5 topics that all have at least one resource. Do not stop early.`;
+
+/**
+ * Generate, then retry ONCE if the model under-delivered (too few weeks, or a
+ * week with no topics). M3 occasionally returns a sparse plan; a single nudged
+ * retry recovers it without doubling latency in the common case.
+ */
+async function generateWithRetry(system: string, prompt: string): Promise<PlanSchema> {
+  const isComplete = (p: PlanSchema) =>
+    p.weeks.length >= MIN_WEEKS && p.weeks.every((w) => w.topics.length >= 1);
+
+  let plan = await generateStructured(planSchema, system, prompt);
+  if (!isComplete(plan)) {
+    plan = await generateStructured(planSchema, system + RETRY_INSTRUCTION, prompt);
+  }
+  return plan;
+}
+
 export async function generateLearningPlan(
   rawProfile: UserProfile,
   feedbackHistory: Feedback[] = []
@@ -105,8 +126,7 @@ export async function generateLearningPlan(
   const userProfile = sanitizeProfile(rawProfile);
   const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory);
 
-  const object = await generateStructured(
-    planSchema,
+  const object = await generateWithRetry(
     systemPrompt,
     JSON.stringify({
       ...userProfile,
@@ -149,16 +169,26 @@ feedback-driven adaptation rules. Number weeks correctly starting at ${firstWeek
 ALREADY COMPLETED (for continuity, do not repeat):
 ${completedWeeks.map((w) => `- Week ${w.week_number}: ${w.title} — ${w.milestone}`).join("\n")}`;
 
-  const object = await generateStructured(
+  const adaptPrompt = JSON.stringify({ ...userProfile, feedback_history: feedbackHistory });
+  let object = await generateStructured(
     adaptationResponseSchema,
     systemPrompt + instruction,
-    JSON.stringify({ ...userProfile, feedback_history: feedbackHistory })
+    adaptPrompt
   );
 
-  // Defensive: keep only weeks strictly after the current one, in order.
-  object.weeks = object.weeks
-    .filter((w) => w.week_number > currentWeekNumber)
-    .sort((a, b) => a.week_number - b.week_number);
+  // Keep only weeks strictly after the current one, in order.
+  const clean = (o: AdaptationResponse) =>
+    o.weeks.filter((w) => w.week_number > currentWeekNumber).sort((a, b) => a.week_number - b.week_number);
+
+  // Retry once if the model returned no usable remaining weeks.
+  if (clean(object).length === 0) {
+    object = await generateStructured(
+      adaptationResponseSchema,
+      systemPrompt + instruction + "\n\nREMINDER: You MUST output the remaining weeks in full. Do not return an empty plan.",
+      adaptPrompt
+    );
+  }
+  object.weeks = clean(object);
   return object;
 }
 
