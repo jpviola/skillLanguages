@@ -37,7 +37,7 @@ function resolveModel(): LanguageModel {
             const body = JSON.parse(options.body);
             body.thinking = { type: "disabled" };
             if (!body.max_completion_tokens) {
-              body.max_completion_tokens = Number(process.env.LLM_MAX_TOKENS || 16000);
+              body.max_completion_tokens = Number(process.env.LLM_MAX_TOKENS || 24000);
             }
             options = { ...options, body: JSON.stringify(body) };
           } catch {

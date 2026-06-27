@@ -6,7 +6,7 @@ import { usePlan } from "@/context/PlanContext";
 import { costStyles } from "@/lib/ui";
 import type { ResourceType } from "@/lib/types";
 
-const TYPES: ResourceType[] = ["Video", "Article", "Interactive", "Practice Guide", "Tool/Equipment"];
+const TYPES: ResourceType[] = ["Video", "Podcast", "Article", "App", "Interactive", "Flashcards"];
 
 export default function ResourcesPage() {
   const { state } = usePlan();

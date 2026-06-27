@@ -6,9 +6,9 @@ import { PlanProvider } from "@/context/PlanContext";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "SkillPath AI — Personalized vocational learning paths",
+  title: "SkillPath AI — Personalized language learning paths",
   description:
-    "AI-generated, week-by-week learning plans for trades and hands-on skills. Adapts to your feedback.",
+    "AI-generated, week-by-week study plans for Spanish, English, French, Italian, Ancient Greek and Latin. Adapts to your feedback.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

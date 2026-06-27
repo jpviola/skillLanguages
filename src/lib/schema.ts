@@ -5,7 +5,7 @@ import { z } from "zod";
 export const resourceSchema = z.object({
   title: z.string(),
   url: z.string().describe("empty string if unknown"),
-  type: z.enum(["Video", "Article", "Interactive", "Practice Guide", "Tool/Equipment"]),
+  type: z.enum(["Video", "Podcast", "Article", "App", "Interactive", "Flashcards"]),
   cost: z.enum(["Free", "Low", "Premium"]),
   preferred: z.boolean().describe("true if best match for the user's preferences"),
 });
@@ -13,11 +13,14 @@ export const resourceSchema = z.object({
 export const topicSchema = z.object({
   name: z.string(),
   type: z.enum([
-    "Safety",
-    "Theory",
-    "Demonstration",
-    "Hands-On Practice",
-    "Project",
+    "Vocabulary",
+    "Grammar",
+    "Listening",
+    "Speaking",
+    "Reading",
+    "Writing",
+    "Pronunciation",
+    "Culture",
     "Review",
     "Assessment",
   ]),
@@ -49,11 +52,13 @@ export type PlanSchema = z.infer<typeof planSchema>;
 
 // ---- Input validation (Layer 3) ----
 export const profileInputSchema = z.object({
-  skill: z.string().min(1).max(120),
+  skill: z.string().min(1).max(120), // target language
   current_level: z.enum(["Absolute Beginner", "Beginner", "Intermediate", "Advanced"]),
   goal: z.string().min(1).max(600),
   time_available: z.string().min(1).max(60),
-  learning_style: z.array(z.enum(["Hands-on", "Videos", "Reading", "Projects"])).min(1),
+  learning_style: z
+    .array(z.enum(["Conversation", "Listening", "Reading", "Apps & games"]))
+    .min(1),
   resource_preference: z.enum(["Free only", "Free + Low cost", "Any"]),
 });
 

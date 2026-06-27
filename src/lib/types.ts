@@ -2,10 +2,10 @@
 
 export type Level = "Absolute Beginner" | "Beginner" | "Intermediate" | "Advanced";
 export type ResourcePreference = "Free only" | "Free + Low cost" | "Any";
-export type LearningStyle = "Hands-on" | "Videos" | "Reading" | "Projects";
+export type LearningStyle = "Conversation" | "Listening" | "Reading" | "Apps & games";
 
 export interface UserProfile {
-  skill: string;
+  skill: string; // target language to learn, e.g. "Spanish", "Latin"
   current_level: Level;
   goal: string;
   time_available: string; // e.g. "5-7 hours/week"
@@ -23,20 +23,24 @@ export interface Feedback {
 }
 
 export type TopicType =
-  | "Safety"
-  | "Theory"
-  | "Demonstration"
-  | "Hands-On Practice"
-  | "Project"
+  | "Vocabulary"
+  | "Grammar"
+  | "Listening"
+  | "Speaking"
+  | "Reading"
+  | "Writing"
+  | "Pronunciation"
+  | "Culture"
   | "Review"
   | "Assessment";
 
 export type ResourceType =
   | "Video"
+  | "Podcast"
   | "Article"
+  | "App"
   | "Interactive"
-  | "Practice Guide"
-  | "Tool/Equipment";
+  | "Flashcards";
 
 export type Cost = "Free" | "Low" | "Premium";
 

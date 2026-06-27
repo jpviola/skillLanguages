@@ -13,19 +13,9 @@ import type {
   ResourcePreference,
 } from "@/lib/types";
 
-const SKILLS = [
-  "Welding",
-  "Electrical Work",
-  "Plumbing",
-  "HVAC",
-  "CNC Machining",
-  "Automotive Repair",
-  "Cosmetics",
-  "Culinary Arts",
-  "Carpentry",
-];
+const SKILLS = ["Spanish", "English", "French", "Italian", "Ancient Greek", "Latin"];
 const LEVELS: Level[] = ["Absolute Beginner", "Beginner", "Intermediate", "Advanced"];
-const STYLES: LearningStyle[] = ["Hands-on", "Videos", "Reading", "Projects"];
+const STYLES: LearningStyle[] = ["Conversation", "Listening", "Reading", "Apps & games"];
 const PREFS: ResourcePreference[] = ["Free only", "Free + Low cost", "Any"];
 
 export default function OnboardPage() {
@@ -35,12 +25,12 @@ export default function OnboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [skill, setSkill] = useState("Welding");
+  const [skill, setSkill] = useState("Spanish");
   const [customSkill, setCustomSkill] = useState("");
   const [level, setLevel] = useState<Level>("Beginner");
-  const [goal, setGoal] = useState("Get job-ready in 6 months");
+  const [goal, setGoal] = useState("Hold a basic conversation in 3 months");
   const [hours, setHours] = useState(6);
-  const [styles, setStyles] = useState<LearningStyle[]>(["Hands-on", "Videos"]);
+  const [styles, setStyles] = useState<LearningStyle[]>(["Conversation", "Listening"]);
   const [pref, setPref] = useState<ResourcePreference>("Free + Low cost");
 
   const finalSkill = customSkill.trim() || skill;
@@ -124,7 +114,7 @@ export default function OnboardPage() {
           ) : (
             <>
               {step === 1 && (
-                <Section title="What do you want to learn?" subtitle="Pick a trade or type your own.">
+                <Section title="Which language do you want to learn?" subtitle="Pick one or type your own.">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {SKILLS.map((s) => (
                       <button
@@ -146,7 +136,7 @@ export default function OnboardPage() {
                   <input
                     value={customSkill}
                     onChange={(e) => setCustomSkill(e.target.value)}
-                    placeholder="Or type a custom skill…"
+                    placeholder="Or type another language…"
                     className="mt-4 w-full rounded-lg border border-line px-4 py-2.5 text-sm outline-none focus:border-primary"
                   />
                 </Section>
@@ -174,7 +164,7 @@ export default function OnboardPage() {
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                     rows={3}
-                    placeholder="e.g. Get job-ready in 6 months"
+                    placeholder="e.g. Hold a conversation in 3 months, read the news, pass B1…"
                     className="mt-1 w-full rounded-lg border border-line px-4 py-2.5 text-sm outline-none focus:border-primary"
                   />
                 </Section>
@@ -242,7 +232,7 @@ export default function OnboardPage() {
               {step === 5 && (
                 <Section title="Ready to build your path" subtitle="Review and generate.">
                   <ul className="space-y-2 text-sm">
-                    <Review label="Skill" value={finalSkill} />
+                    <Review label="Language" value={finalSkill} />
                     <Review label="Level" value={level} />
                     <Review label="Goal" value={goal} />
                     <Review label="Time" value={`${hours}-${hours + 1} hrs/week`} />
@@ -340,11 +330,11 @@ function GeneratingSkeleton({
   return (
     <div className="py-6 text-center">
       <Loader2 className="mx-auto mb-4 animate-spin text-primary" size={36} />
-      <h2 className="text-lg font-bold text-ink">Building your {skill} learning path…</h2>
+      <h2 className="text-lg font-bold text-ink">Building your {skill} study plan…</h2>
       <p className="mt-1 text-sm text-ink-soft">
         {ready.length > 0
           ? `Drafted ${ready.length}${total ? ` of ${target}` : ""} weeks…`
-          : "Sequencing safety, theory and hands-on practice for you."}
+          : "Sequencing vocabulary, grammar, listening and speaking practice for you."}
       </p>
       <div className="mt-6 space-y-2 text-left">
         {ready.map((w, i) => (

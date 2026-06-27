@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Target, Clock, Coins, Wrench, Sparkles, Laptop, ArrowRight, Play, CheckCircle2 } from "lucide-react";
+import { Target, Clock, Coins, Languages, Sparkles, Laptop, ArrowRight, Play, CheckCircle2 } from "lucide-react";
 import {
   usePlan,
   computeOverallPercent,
@@ -58,7 +58,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-6 lg:px-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-ink">Your {plan.skill} Path</h1>
+        <h1 className="text-2xl font-bold text-ink">Your {plan.skill} Journey</h1>
         <p className="text-sm text-ink-soft">
           {plan.total_weeks}-week plan · {plan.weekly_time_hours} hrs/week · {plan.estimated_total_cost}
           {estFinish && (
@@ -121,7 +121,7 @@ export default function DashboardPage() {
         <section className="card order-1 p-5 lg:col-span-2 lg:col-start-1 lg:row-start-1">
           <h2 className="mb-3 text-sm font-semibold text-ink">Tell us about you</h2>
           <div className="flex flex-wrap gap-2">
-            <Badge icon={<Wrench size={13} />} label={userProfile.skill} tone="primary" />
+            <Badge icon={<Languages size={13} />} label={userProfile.skill} tone="primary" />
             <Badge label={userProfile.current_level} />
             <Badge icon={<Clock size={13} />} label={userProfile.time_available} />
             <Badge icon={<Sparkles size={13} />} label={userProfile.learning_style.join(" + ")} />

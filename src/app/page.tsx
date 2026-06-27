@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
   GraduationCap,
-  Shield,
-  Wrench,
+  Languages,
+  MessageCircle,
   RefreshCw,
   ArrowRight,
   CheckCircle2,
@@ -13,12 +13,12 @@ const STEPS = [
   {
     icon: GraduationCap,
     title: "Tell us about you",
-    text: "Your trade, level, goal, weekly time and learning style.",
+    text: "Your language, level, goal, weekly time and learning style.",
   },
   {
-    icon: Wrench,
+    icon: MessageCircle,
     title: "Get a week-by-week plan",
-    text: "Safety first, then hands-on practice tied to real resources.",
+    text: "Vocabulary, grammar, listening and speaking tied to real resources.",
   },
   {
     icon: RefreshCw,
@@ -47,14 +47,14 @@ export default function Landing() {
 
       <section className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-24">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-xs font-medium text-primary">
-          <Shield size={13} /> Built for the trades
+          <Languages size={13} /> Built for language learners
         </span>
         <h1 className="mt-5 text-4xl font-bold leading-tight text-ink sm:text-5xl">
-          Your personalized path to a <span className="text-primary">hands-on career</span>
+          Your personalized path to a <span className="text-primary">new language</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-ink-soft">
-          SkillPath AI builds adaptive, week-by-week learning plans for welding, electrical, HVAC,
-          CNC and more — prioritizing safety, practice and free resources.
+          SkillPath AI builds adaptive, week-by-week study plans for Spanish, English, French,
+          Italian, Ancient Greek and Latin — prioritizing real practice and free resources.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
@@ -71,7 +71,7 @@ export default function Landing() {
           </Link>
         </div>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-ink-soft">
-          {["Safety-first", "Free & low-cost", "Adapts to your pace"].map((t) => (
+          {["Comprehensible input", "Free & low-cost", "Adapts to your pace"].map((t) => (
             <span key={t} className="inline-flex items-center gap-1">
               <CheckCircle2 size={14} className="text-emerald-500" /> {t}
             </span>

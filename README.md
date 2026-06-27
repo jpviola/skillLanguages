@@ -1,8 +1,9 @@
 # SkillPath AI
 
-Personalized **vocational** learning-path generator for the trades — welding, electrical, HVAC,
-CNC, automotive, culinary, carpentry and more. The AI produces a safety-first, hands-on,
-week-by-week plan and **adapts upcoming weeks based on your feedback**.
+Personalized **language-learning** path generator for Spanish (default), English, French,
+Italian, Ancient Greek and Latin. The AI produces a pedagogy-driven, week-by-week study plan —
+comprehensible input, grammar-in-context, vocabulary with spaced repetition, and active
+speaking/writing practice — and **adapts upcoming weeks based on your feedback**.
 
 Built as a single deployable **Next.js (App Router)** app on Vercel — consolidating all 5 layers of
 the original spec into one artifact.

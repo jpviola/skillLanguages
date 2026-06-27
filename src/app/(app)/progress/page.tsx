@@ -69,7 +69,7 @@ export default function ProgressPage() {
       </section>
 
       <section className="mt-6 card p-6">
-        <h2 className="mb-3 text-sm font-semibold text-ink">Skill timeline</h2>
+        <h2 className="mb-3 text-sm font-semibold text-ink">Language timeline</h2>
         <ol className="space-y-2">
           {weeks.map((w) => {
             const s = weekStatus(w, topicProgress);
