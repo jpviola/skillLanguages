@@ -128,10 +128,11 @@ async function generateWithRetry(system: string, prompt: string): Promise<PlanSc
 
 export async function generateLearningPlan(
   rawProfile: UserProfile,
-  feedbackHistory: Feedback[] = []
+  feedbackHistory: Feedback[] = [],
+  outputLanguage = "Spanish"
 ): Promise<PlanSchema> {
   const userProfile = sanitizeProfile(rawProfile);
-  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory);
+  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory, outputLanguage);
 
   const object = await generateWithRetry(
     systemPrompt,
@@ -161,10 +162,11 @@ export async function adaptRemainingPlan(
   feedbackHistory: Feedback[],
   currentWeekNumber: number,
   totalWeeks: number,
-  completedWeeks: WeekSummary[]
+  completedWeeks: WeekSummary[],
+  outputLanguage = "Spanish"
 ): Promise<AdaptationResponse> {
   const userProfile = sanitizeProfile(rawProfile);
-  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory);
+  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory, outputLanguage);
 
   const firstWeek = currentWeekNumber + 1;
   const instruction = `

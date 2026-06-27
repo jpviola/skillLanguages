@@ -1,6 +1,8 @@
 // Layer 4 — Frontend API client (Fetch, 30s timeout, device id header).
-import type { UserProfile, Feedback, Plan, Week } from "./types";
+import type { UserProfile, Feedback, Plan, Week, Locale } from "./types";
 import type { PlacementResponse } from "./schema";
+
+const OUTPUT_LANGUAGE: Record<Locale, string> = { es: "Spanish", en: "English" };
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -46,8 +48,8 @@ async function request<T>(path: string, body: unknown): Promise<T> {
   }
 }
 
-export function generatePlan(profile: UserProfile): Promise<Plan> {
-  return request<Plan>("/api/v1/plan", profile);
+export function generatePlan(profile: UserProfile, locale: Locale = "es"): Promise<Plan> {
+  return request<Plan>("/api/v1/plan", { ...profile, output_language: OUTPUT_LANGUAGE[locale] });
 }
 
 export function getPlacementTest(language: string): Promise<PlacementResponse> {
@@ -71,7 +73,8 @@ export function submitFeedback(
   feedbackHistory: Feedback[],
   currentWeekNumber: number,
   totalWeeks: number,
-  completedWeeks: WeekSummary[]
+  completedWeeks: WeekSummary[],
+  locale: Locale = "es"
 ): Promise<AdaptResponse> {
   return request<AdaptResponse>("/api/v1/plan/feedback", {
     profile,
@@ -79,5 +82,6 @@ export function submitFeedback(
     current_week_number: currentWeekNumber,
     total_weeks: totalWeeks,
     completed_weeks: completedWeeks,
+    output_language: OUTPUT_LANGUAGE[locale],
   });
 }

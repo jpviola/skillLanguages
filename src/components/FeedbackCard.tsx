@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
 import { submitFeedback } from "@/lib/api";
-import { feedbackLabels } from "@/lib/labels";
+import { useI18n } from "@/lib/i18n";
 import type { Difficulty, Feedback, Week } from "@/lib/types";
 
 const OPTIONS: Difficulty[] = ["Just Right", "Too Easy", "Too Hard"];
 
 export default function FeedbackCard({ week }: { week: Week }) {
   const { state, dispatch } = usePlan();
+  const { t, L, locale } = useI18n();
   const weekNumber = week.week_number;
   const [difficulty, setDifficulty] = useState<Difficulty>("Just Right");
   const [comment, setComment] = useState("");
@@ -33,7 +34,8 @@ export default function FeedbackCard({ week }: { week: Week }) {
         [...state.feedbackHistory, entry],
         weekNumber,
         totalWeeks,
-        completedWeeks
+        completedWeeks,
+        locale
       );
       // Commit only after the adaptation succeeds — keeps state consistent.
       dispatch({ type: "SET_WEEK_DONE", payload: { week, done: true } });
@@ -48,7 +50,7 @@ export default function FeedbackCard({ week }: { week: Week }) {
       });
       setComment("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "La adaptación falló. No se cambió nada.");
+      setError(e instanceof Error ? e.message : t("fb.failed"));
     } finally {
       dispatch({ type: "SET_ADAPTING", payload: false });
     }
@@ -56,8 +58,8 @@ export default function FeedbackCard({ week }: { week: Week }) {
 
   return (
     <div className="card p-5">
-      <h3 className="text-base font-semibold text-ink">Califica esta semana (Semana {weekNumber})</h3>
-      <p className="mt-0.5 text-xs text-ink-soft">Tu feedback reajusta las próximas semanas.</p>
+      <h3 className="text-base font-semibold text-ink">{t("fb.title", { week: weekNumber })}</h3>
+      <p className="mt-0.5 text-xs text-ink-soft">{t("fb.sub")}</p>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {OPTIONS.map((o) => (
@@ -70,7 +72,7 @@ export default function FeedbackCard({ week }: { week: Week }) {
                 : "border-line bg-white text-ink hover:border-primary/40"
             }`}
           >
-            {feedbackLabels[o]}
+            {L.feedback[o]}
           </button>
         ))}
       </div>
@@ -79,7 +81,7 @@ export default function FeedbackCard({ week }: { week: Week }) {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         rows={2}
-        placeholder="Sugiere mejoras…"
+        placeholder={t("fb.placeholder")}
         className="mt-3 w-full rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-primary"
       />
 
@@ -92,10 +94,10 @@ export default function FeedbackCard({ week }: { week: Week }) {
       >
         {state.isAdapting ? (
           <>
-            <Loader2 className="animate-spin" size={16} /> Adaptando tu plan…
+            <Loader2 className="animate-spin" size={16} /> {t("fb.adapting")}
           </>
         ) : (
-          "Enviar feedback"
+          t("fb.submit")
         )}
       </button>
     </div>

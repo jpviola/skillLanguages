@@ -4,10 +4,11 @@ import { ChevronDown, Clock, ExternalLink, CheckCircle2, Circle, Sparkles } from
 import type { Week } from "@/lib/types";
 import { usePlan, topicKey, weekStatus, weekDoneCount } from "@/context/PlanContext";
 import { topicTypeStyles, costStyles, statusBorder, formatMinutes } from "@/lib/ui";
-import { topicTypeLabels, costLabels } from "@/lib/labels";
+import { useI18n } from "@/lib/i18n";
 
 export default function WeekCard({ week }: { week: Week }) {
   const { state, dispatch } = usePlan();
+  const { t, L } = useI18n();
   const tp = state.topicProgress;
   const status = weekStatus(week, tp);
   const done = weekDoneCount(week, tp);
@@ -31,7 +32,7 @@ export default function WeekCard({ week }: { week: Week }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Semana {week.week_number}
+              {t("common.week")} {week.week_number}
             </span>
             <span className="text-xs text-ink-soft">·</span>
             <span className="inline-flex items-center gap-1 text-xs text-ink-soft">
@@ -39,7 +40,7 @@ export default function WeekCard({ week }: { week: Week }) {
             </span>
             {changed && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold text-primary">
-                <Sparkles size={10} /> Ajustada
+                <Sparkles size={10} /> {t("wk.adjusted")}
               </span>
             )}
           </div>
@@ -48,7 +49,7 @@ export default function WeekCard({ week }: { week: Week }) {
         <button
           onClick={toggleWeek}
           className="shrink-0 text-ink-soft transition hover:text-emerald-500"
-          title={status === "completed" ? "Marcar semana como no hecha" : "Marcar toda la semana"}
+          title={status === "completed" ? t("wk.markUndone") : t("wk.markDone")}
         >
           {status === "completed" ? (
             <CheckCircle2 className="text-emerald-500" size={22} />
@@ -74,12 +75,12 @@ export default function WeekCard({ week }: { week: Week }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {topicTypes.map((t) => (
+        {topicTypes.map((tt) => (
           <span
-            key={t}
-            className={`rounded-md border px-2 py-0.5 text-[11px] font-medium ${topicTypeStyles[t]}`}
+            key={tt}
+            className={`rounded-md border px-2 py-0.5 text-[11px] font-medium ${topicTypeStyles[tt]}`}
           >
-            {topicTypeLabels[t]}
+            {L.topicType[tt]}
           </span>
         ))}
       </div>
@@ -95,7 +96,7 @@ export default function WeekCard({ week }: { week: Week }) {
         ))}
         {extra > 0 && (
           <span className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-ink-soft">
-            +{extra} más
+            +{extra} {t("wk.more")}
           </span>
         )}
       </div>
@@ -105,21 +106,21 @@ export default function WeekCard({ week }: { week: Week }) {
           onClick={() => dispatch({ type: "TOGGLE_WEEK_EXPAND", payload: week.week_number })}
           className="flex items-center gap-1 text-xs font-medium text-primary"
         >
-          {expanded ? "Ocultar" : "Ver más"}
+          {expanded ? t("wk.hide") : t("wk.expand")}
           <ChevronDown size={14} className={expanded ? "rotate-180 transition" : "transition"} />
         </button>
         <Link
           href={`/plan/${week.week_number}`}
           className="text-xs font-medium text-primary hover:underline"
         >
-          Ver semana completa →
+          {t("wk.viewFull")}
         </Link>
       </div>
 
       {expanded && (
         <div className="mt-4 space-y-3 border-t border-line pt-4">
           <p className="text-xs text-ink-soft">
-            <span className="font-medium text-ink">Objetivo:</span> {week.objective}
+            <span className="font-medium text-ink">{t("wk.objective")}</span> {week.objective}
           </p>
           {week.topics.map((t, i) => {
             const key = topicKey(week.week_number, i);
@@ -141,7 +142,7 @@ export default function WeekCard({ week }: { week: Week }) {
                     <span
                       className={`rounded-md border px-2 py-0.5 text-[11px] font-medium ${topicTypeStyles[t.type]}`}
                     >
-                      {topicTypeLabels[t.type]}
+                      {L.topicType[t.type]}
                     </span>
                   </button>
                   <span className="text-xs text-ink-soft">{t.estimated_minutes} min</span>
@@ -165,7 +166,7 @@ export default function WeekCard({ week }: { week: Week }) {
                         <span className="text-ink-soft">{r.title}</span>
                       )}
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${costStyles[r.cost]}`}>
-                        {costLabels[r.cost]}
+                        {L.cost[r.cost]}
                       </span>
                     </div>
                   ))}

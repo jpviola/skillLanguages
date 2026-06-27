@@ -10,9 +10,10 @@ import {
   type ReactNode,
   type Dispatch,
 } from "react";
-import type { UserProfile, Plan, Week, Feedback, WeekStatus } from "@/lib/types";
+import type { UserProfile, Plan, Week, Feedback, WeekStatus, Locale } from "@/lib/types";
 
 interface State {
+  locale: Locale;
   isGenerating: boolean;
   isAdapting: boolean;
   userProfile: UserProfile | null;
@@ -28,6 +29,7 @@ interface State {
 }
 
 const initialState: State = {
+  locale: "es",
   isGenerating: false,
   isAdapting: false,
   userProfile: null,
@@ -44,6 +46,7 @@ const initialState: State = {
 
 type Action =
   | { type: "HYDRATE"; payload: Partial<State> }
+  | { type: "SET_LOCALE"; payload: Locale }
   | { type: "SET_GENERATING"; payload: boolean }
   | { type: "SET_ADAPTING"; payload: boolean }
   | { type: "SET_PROFILE"; payload: UserProfile }
@@ -67,6 +70,8 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "HYDRATE":
       return { ...state, ...action.payload, hydrated: true };
+    case "SET_LOCALE":
+      return { ...state, locale: action.payload };
     case "SET_GENERATING":
       return { ...state, isGenerating: action.payload };
     case "SET_ADAPTING":
@@ -134,7 +139,7 @@ function reducer(state: State, action: Action): State {
     case "HIDE_ADAPTATION_BANNER":
       return { ...state, showAdaptationBanner: false, changedWeeks: [] };
     case "RESET_PLAN":
-      return { ...initialState, hydrated: true };
+      return { ...initialState, hydrated: true, locale: state.locale };
     default:
       return state;
   }
@@ -158,10 +163,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!state.hydrated) return;
-    const { userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote } = state;
+    const { locale, userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote } = state;
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote })
+      JSON.stringify({ locale, userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote })
     );
   }, [state]);
 

@@ -1,7 +1,7 @@
 // Layer 1.1 — System prompt + Layer 1.2 feedback-loop logic
 import type { UserProfile, Feedback } from "./types";
 
-export const BASE_SYSTEM_PROMPT = `You are SkillPath AI, a language-learning path architect. You design week-by-week study plans for learners of Spanish, English, French, Italian, Ancient Greek, and Latin (the "skill" field is the target language).
+export const BASE_SYSTEM_PROMPT = `You are SkillPath AI, a language-learning path architect. You design week-by-week study plans for learners of Spanish, English, French, Italian, German, Ancient Greek, and Latin (the "skill" field is the target language).
 
 You generate structured, week-by-week learning plans tailored to each user's profile. You apply proven language-acquisition pedagogy:
 - Comprehensible input first: lots of listening and reading slightly above the learner's level
@@ -35,12 +35,20 @@ CRITICAL OUTPUT REQUIREMENTS (a plan that violates these is invalid):
 - Every week MUST contain 3 to 5 topics, each with at least one resource.
 - Number weeks consecutively starting at 1 with no gaps.
 - "total_weeks" MUST equal the exact number of weeks you output.
-- Do not summarize, abbreviate, or stop early — emit every week and every topic in full.
+- Do not summarize, abbreviate, or stop early — emit every week and every topic in full.`;
+
+/**
+ * Instruction block that fixes the OUTPUT language (the learner's native/UI
+ * language). Enum field values stay in English so the UI can map them to labels.
+ */
+export function outputLanguageInstruction(outputLanguage: string): string {
+  return `
 
 LANGUAGE OF THE OUTPUT:
-- Write ALL human-readable text in Spanish: title, objective, topic "name", milestone, adaptation_note, estimated_total_cost, and resource "title" (translate generic descriptions; keep proper names like "Dreaming Spanish", "Anki", "iTalki" as-is).
+- Write ALL human-readable text in ${outputLanguage}: title, objective, topic "name", milestone, adaptation_note, estimated_total_cost, and resource "title" (translate generic descriptions; keep proper names like "Dreaming Spanish", "Anki", "iTalki" as-is).
 - Keep these field VALUES exactly in English (they are fixed keys, do NOT translate): topic "type", week "difficulty", and resource "type" and "cost".
-- You may include target-language example words/phrases inside the Spanish text where useful.`;
+- You may include target-language example words/phrases inside the ${outputLanguage} text where useful.`;
+}
 
 /**
  * Layer 1.2 — Builds the system prompt, appending adaptation instructions
@@ -48,9 +56,10 @@ LANGUAGE OF THE OUTPUT:
  */
 export function buildPromptWithFeedback(
   userProfile: UserProfile,
-  previousWeeksFeedback: Feedback[] = []
+  previousWeeksFeedback: Feedback[] = [],
+  outputLanguage = "Spanish"
 ): { systemPrompt: string } {
-  let systemPrompt = BASE_SYSTEM_PROMPT;
+  let systemPrompt = BASE_SYSTEM_PROMPT + outputLanguageInstruction(outputLanguage);
 
   if (previousWeeksFeedback.length > 0) {
     const last = previousWeeksFeedback[previousWeeksFeedback.length - 1];

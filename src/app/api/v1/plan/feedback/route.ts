@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
 
   const { profile, feedback_history, current_week_number, total_weeks, completed_weeks } =
     parsed.data;
+  const outputLanguage =
+    (body as { output_language?: string }).output_language === "English" ? "English" : "Spanish";
 
   try {
     const result = await adaptRemainingPlan(
@@ -43,7 +45,8 @@ export async function POST(req: NextRequest) {
       feedback_history,
       current_week_number,
       total_weeks,
-      completed_weeks
+      completed_weeks,
+      outputLanguage
     );
     return NextResponse.json(
       {

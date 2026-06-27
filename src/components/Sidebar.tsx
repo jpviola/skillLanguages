@@ -11,16 +11,19 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const NAV = [
-  { href: "/plan", label: "Panel", icon: LayoutDashboard },
-  { href: "/resources", label: "Recursos", icon: Library },
-  { href: "/progress", label: "Progreso y feedback", icon: LineChart },
-  { href: "/settings", label: "Ajustes", icon: Settings },
+  { href: "/plan", key: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/resources", key: "nav.resources", icon: Library },
+  { href: "/progress", key: "nav.progress", icon: LineChart },
+  { href: "/settings", key: "nav.settings", icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   const content = (
@@ -47,19 +50,23 @@ export default function Sidebar() {
               }`}
             >
               <item.icon size={18} />
-              {item.label}
+              {t(item.key)}
             </Link>
           );
         })}
       </nav>
 
+      <div className="border-t border-white/10 px-4 py-3">
+        <LanguageSwitcher tone="dark" />
+      </div>
+
       <div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
         <div className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-semibold text-white">
-          Tú
+          {t("sidebar.learner").slice(0, 2)}
         </div>
         <div className="text-xs">
-          <p className="font-medium text-white">Estudiante</p>
-          <p className="text-sidebar-text">Plan gratis</p>
+          <p className="font-medium text-white">{t("sidebar.learner")}</p>
+          <p className="text-sidebar-text">{t("sidebar.freePlan")}</p>
         </div>
       </div>
     </div>
@@ -73,7 +80,7 @@ export default function Sidebar() {
           <GraduationCap size={18} />
           <span className="font-bold">SkillPath AI</span>
         </div>
-        <button onClick={() => setOpen(true)} aria-label="Abrir menú">
+        <button onClick={() => setOpen(true)} aria-label={t("a11y.openMenu")}>
           <Menu size={22} />
         </button>
       </div>
@@ -89,7 +96,7 @@ export default function Sidebar() {
             <button
               onClick={() => setOpen(false)}
               className="absolute right-3 top-3 z-10 text-white"
-              aria-label="Cerrar menú"
+              aria-label={t("a11y.closeMenu")}
             >
               <X size={22} />
             </button>

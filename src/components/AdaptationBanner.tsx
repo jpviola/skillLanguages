@@ -2,10 +2,12 @@
 import { useEffect } from "react";
 import { Brain } from "lucide-react";
 import { usePlan } from "@/context/PlanContext";
+import { useI18n } from "@/lib/i18n";
 
 // Layer 2.5 #6 — thin bottom bar shown for 5s after feedback adaptation.
 export default function AdaptationBanner() {
   const { state, dispatch } = usePlan();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (state.showAdaptationBanner) {
@@ -20,9 +22,7 @@ export default function AdaptationBanner() {
     <div className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3 text-center text-sm font-medium text-white shadow-lg">
       <Brain size={16} className="shrink-0" />
       <span>
-        {state.adaptationNote
-          ? state.adaptationNote
-          : "SkillPath AI ha ajustado tus próximas semanas según tu feedback."}
+        {state.adaptationNote ? state.adaptationNote : t("banner.default")}
       </span>
     </div>
   );

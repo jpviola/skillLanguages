@@ -34,8 +34,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const outputLanguage =
+    (body as { output_language?: string }).output_language === "English" ? "English" : "Spanish";
+
   try {
-    const plan = await generateLearningPlan(parsed.data);
+    const plan = await generateLearningPlan(parsed.data, [], outputLanguage);
     return NextResponse.json(plan, { status: 201 });
   } catch (err) {
     console.error("[plan] generation failed:", err);

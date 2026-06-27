@@ -1,5 +1,8 @@
 // Layer 1 — Domain types for SkillPath AI
 
+// UI / native language of the user (interface locale)
+export type Locale = "es" | "en";
+
 // CEFR / MCER levels
 export type Level = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 export type ResourcePreference = "Free only" | "Free + Low cost" | "Any";

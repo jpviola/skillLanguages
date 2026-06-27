@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, ArrowLeft, CheckCircle2, RotateCcw } from "lucide-react";
 import { getPlacementTest } from "@/lib/api";
-import { levelLabels } from "@/lib/labels";
+import { useI18n } from "@/lib/i18n";
 import type { Level } from "@/lib/types";
 import type { PlacementQuestion } from "@/lib/schema";
 
@@ -30,6 +30,7 @@ export default function PlacementTest({
   onComplete: (level: Level) => void;
   onCancel: () => void;
 }) {
+  const { t, L } = useI18n();
   const [questions, setQuestions] = useState<PlacementQuestion[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -44,10 +45,10 @@ export default function PlacementTest({
     setResult(null);
     try {
       const res = await getPlacementTest(language);
-      if (!res.questions || res.questions.length === 0) throw new Error("Sin preguntas.");
+      if (!res.questions || res.questions.length === 0) throw new Error(t("place.noQuestions"));
       setQuestions(res.questions);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo generar la prueba.");
+      setError(e instanceof Error ? e.message : t("place.failed"));
     }
   }
 
@@ -73,8 +74,8 @@ export default function PlacementTest({
     return (
       <div className="py-8 text-center">
         <Loader2 className="mx-auto mb-4 animate-spin text-primary" size={32} />
-        <h3 className="text-base font-bold text-ink">Preparando tu prueba de {language}…</h3>
-        <p className="mt-1 text-sm text-ink-soft">La IA está creando las preguntas. Puede tardar ~1 minuto.</p>
+        <h3 className="text-base font-bold text-ink">{t("place.loading.title", { skill: language })}</h3>
+        <p className="mt-1 text-sm text-ink-soft">{t("place.loading.sub")}</p>
       </div>
     );
   }
@@ -89,13 +90,13 @@ export default function PlacementTest({
             onClick={onCancel}
             className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink"
           >
-            Volver
+            {t("place.back")}
           </button>
           <button
             onClick={load}
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white"
           >
-            <RotateCcw size={15} /> Reintentar
+            <RotateCcw size={15} /> {t("place.retry")}
           </button>
         </div>
       </div>
@@ -107,23 +108,21 @@ export default function PlacementTest({
     return (
       <div className="py-6 text-center">
         <CheckCircle2 className="mx-auto mb-3 text-emerald-500" size={36} />
-        <p className="text-sm text-ink-soft">Tu nivel estimado es</p>
-        <p className="mt-1 text-2xl font-bold text-primary">{levelLabels[result]}</p>
-        <p className="mx-auto mt-2 max-w-sm text-xs text-ink-soft">
-          Es una estimación rápida; podrás ajustarla manualmente si no coincide.
-        </p>
+        <p className="text-sm text-ink-soft">{t("place.resultPre")}</p>
+        <p className="mt-1 text-2xl font-bold text-primary">{L.level[result]}</p>
+        <p className="mx-auto mt-2 max-w-sm text-xs text-ink-soft">{t("place.resultNote")}</p>
         <div className="mt-5 flex justify-center gap-2">
           <button
             onClick={load}
             className="inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2 text-sm font-medium text-ink"
           >
-            <RotateCcw size={15} /> Repetir
+            <RotateCcw size={15} /> {t("place.repeat")}
           </button>
           <button
             onClick={() => onComplete(result)}
             className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90"
           >
-            Usar este nivel
+            {t("place.use")}
           </button>
         </div>
       </div>
@@ -139,10 +138,10 @@ export default function PlacementTest({
           onClick={onCancel}
           className="inline-flex items-center gap-1 text-xs font-medium text-ink-soft hover:text-primary"
         >
-          <ArrowLeft size={14} /> Cancelar prueba
+          <ArrowLeft size={14} /> {t("place.cancel")}
         </button>
         <span className="text-xs font-medium text-ink-soft">
-          Pregunta {current + 1} de {questions!.length}
+          {t("place.q", { n: current + 1, total: questions!.length })}
         </span>
       </div>
 
