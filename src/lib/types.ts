@@ -88,3 +88,9 @@ export interface Plan {
 }
 
 export type WeekStatus = "not_started" | "in_progress" | "completed";
+
+export interface WeekSummary {
+  week_number: number;
+  title: string;
+  milestone: string;
+}

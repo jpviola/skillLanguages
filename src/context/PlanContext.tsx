@@ -145,7 +145,44 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const STORAGE_KEY = "skillpath_state_v2";
+const STORAGE_KEY = "skillpath_state_v3";
+const CURRENT_VERSION = 3;
+
+interface StoredState {
+  version: number;
+  locale: Locale;
+  userProfile: UserProfile | null;
+  plan: Plan | null;
+  weeks: Week[];
+  topicProgress: Record<string, boolean>;
+  feedbackHistory: Feedback[];
+  adaptationNote: string | null;
+  expandedWeek: number | null;
+  changedWeeks: number[];
+  showAdaptationBanner: boolean;
+}
+
+function migrate(raw: unknown): Partial<State> | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+
+  // v1/v2 had no version field and missing expandedWeek/changedWeeks/showAdaptationBanner
+  if (obj.version === undefined) {
+    return {
+      locale: (obj.locale as Locale) ?? "es",
+      userProfile: obj.userProfile as UserProfile ?? null,
+      plan: obj.plan as Plan ?? null,
+      weeks: (obj.weeks as Week[]) ?? [],
+      topicProgress: (obj.topicProgress as Record<string, boolean>) ?? {},
+      feedbackHistory: (obj.feedbackHistory as Feedback[]) ?? [],
+      adaptationNote: (obj.adaptationNote as string | null) ?? null,
+      expandedWeek: null,
+      changedWeeks: [],
+      showAdaptationBanner: false,
+    };
+  }
+  return obj as Partial<State>;
+}
 
 const PlanContext = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
 
@@ -155,7 +192,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      dispatch({ type: "HYDRATE", payload: raw ? JSON.parse(raw) : {} });
+      if (!raw) { dispatch({ type: "HYDRATE", payload: {} }); return; }
+      const parsed = JSON.parse(raw);
+      const migrated = migrate(parsed);
+      dispatch({ type: "HYDRATE", payload: migrated ?? {} });
     } catch {
       dispatch({ type: "HYDRATE", payload: {} });
     }
@@ -163,11 +203,20 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!state.hydrated) return;
-    const { locale, userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote } = state;
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ locale, userProfile, plan, weeks, topicProgress, feedbackHistory, adaptationNote })
-    );
+    const stored: StoredState = {
+      version: CURRENT_VERSION,
+      locale: state.locale,
+      userProfile: state.userProfile,
+      plan: state.plan,
+      weeks: state.weeks,
+      topicProgress: state.topicProgress,
+      feedbackHistory: state.feedbackHistory,
+      adaptationNote: state.adaptationNote,
+      expandedWeek: state.expandedWeek,
+      changedWeeks: state.changedWeeks,
+      showAdaptationBanner: state.showAdaptationBanner,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
   }, [state]);
 
   return <PlanContext.Provider value={{ state, dispatch }}>{children}</PlanContext.Provider>;

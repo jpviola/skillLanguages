@@ -1,10 +1,11 @@
 "use client";
 import { use } from "react";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, CheckCircle2, Circle, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, Clock } from "lucide-react";
 import { usePlan, topicKey, weekStatus, weekDoneCount } from "@/context/PlanContext";
-import { topicTypeStyles, costStyles, formatMinutes } from "@/lib/ui";
+import { topicTypeStyles, formatMinutes } from "@/lib/ui";
 import { useI18n } from "@/lib/i18n";
+import ResourceLink, { ResourceBadge } from "@/components/ResourceLink";
 
 export default function WeekDetailPage({ params }: { params: Promise<{ week: string }> }) {
   const { week: weekParam } = use(params);
@@ -88,22 +89,9 @@ export default function WeekDetailPage({ params }: { params: Promise<{ week: str
             <div className="mt-2 space-y-1.5">
               {t.resources.map((r, j) => (
                 <div key={j} className="flex items-center gap-2 text-sm">
-                  {r.url ? (
-                    <a
-                      href={r.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      {r.title} <ExternalLink size={12} />
-                    </a>
-                  ) : (
-                    <span className="text-ink">{r.title}</span>
-                  )}
+                  <ResourceLink resource={r} />
                   <span className="text-[10px] text-ink-soft">({L.resourceType[r.type]})</span>
-                  <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${costStyles[r.cost]}`}>
-                    {L.cost[r.cost]}
-                  </span>
+                  <ResourceBadge resource={r} />
                 </div>
               ))}
             </div>

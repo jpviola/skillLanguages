@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import { ChevronDown, Clock, ExternalLink, CheckCircle2, Circle, Sparkles } from "lucide-react";
+import { ChevronDown, Clock, CheckCircle2, Circle, Sparkles } from "lucide-react";
 import type { Week } from "@/lib/types";
 import { usePlan, topicKey, weekStatus, weekDoneCount } from "@/context/PlanContext";
-import { topicTypeStyles, costStyles, statusBorder, formatMinutes } from "@/lib/ui";
+import { topicTypeStyles, statusBorder, formatMinutes } from "@/lib/ui";
 import { useI18n } from "@/lib/i18n";
+import ResourceLink, { ResourceBadge } from "@/components/ResourceLink";
 
 export default function WeekCard({ week }: { week: Week }) {
   const { state, dispatch } = usePlan();
@@ -153,21 +154,8 @@ export default function WeekCard({ week }: { week: Week }) {
                 <div className="mt-2 space-y-1">
                   {t.resources.map((r, j) => (
                     <div key={j} className="flex items-center gap-2 text-xs">
-                      {r.url ? (
-                        <a
-                          href={r.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-primary hover:underline"
-                        >
-                          {r.title} <ExternalLink size={11} />
-                        </a>
-                      ) : (
-                        <span className="text-ink-soft">{r.title}</span>
-                      )}
-                      <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${costStyles[r.cost]}`}>
-                        {L.cost[r.cost]}
-                      </span>
+                      <ResourceLink resource={r} />
+                      <ResourceBadge resource={r} />
                     </div>
                   ))}
                 </div>

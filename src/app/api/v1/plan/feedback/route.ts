@@ -5,17 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { feedbackRequestSchema } from "@/lib/schema";
 import { adaptRemainingPlan } from "@/lib/llm";
 import { rateLimit } from "@/lib/rateLimit";
+import { OUTPUT_LANGUAGE } from "@/lib/api";
+import { classifyError, RateLimitError, ValidationError, InvalidBodyError } from "@/lib/errors";
 
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   const deviceId = req.headers.get("x-device-id") || "anonymous";
 
-  const limited = rateLimit(deviceId);
+  const limited = await rateLimit(deviceId);
   if (!limited.ok) {
+    const err = new RateLimitError(limited.retryAfter);
     return NextResponse.json(
-      { error: "Demasiadas solicitudes. Ve un poco más despacio." },
-      { status: 429, headers: { "Retry-After": String(limited.retryAfter) } }
+      { error: err.message },
+      { status: err.statusCode, headers: { "Retry-After": String(err.retryAfter) } }
     );
   }
 
@@ -23,21 +26,25 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Cuerpo JSON inválido." }, { status: 400 });
+    const err = new InvalidBodyError();
+    return NextResponse.json({ error: err.message }, { status: err.statusCode });
   }
 
   const parsed = feedbackRequestSchema.safeParse(body);
   if (!parsed.success) {
+    const err = new ValidationError(parsed.error.flatten().fieldErrors);
     return NextResponse.json(
-      { error: "La validación falló", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+      { error: err.message, details: (err as unknown as Record<string, unknown>).details },
+      { status: err.statusCode }
     );
   }
 
   const { profile, feedback_history, current_week_number, total_weeks, completed_weeks } =
     parsed.data;
-  const outputLanguage =
-    (body as { output_language?: string }).output_language === "English" ? "English" : "Spanish";
+  const raw = body as { output_language?: string };
+  const outputLanguage = raw.output_language && OUTPUT_LANGUAGE[raw.output_language as keyof typeof OUTPUT_LANGUAGE]
+    ? OUTPUT_LANGUAGE[raw.output_language as keyof typeof OUTPUT_LANGUAGE]
+    : OUTPUT_LANGUAGE.es;
 
   try {
     const result = await adaptRemainingPlan(
@@ -58,9 +65,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (err) {
     console.error("[feedback] adaptation failed:", err);
-    return NextResponse.json(
-      { error: "La IA está trabajando. Inténtalo de nuevo en un momento." },
-      { status: 503 }
-    );
+    const appErr = classifyError(err);
+    return NextResponse.json({ error: appErr.message }, { status: appErr.statusCode });
   }
 }

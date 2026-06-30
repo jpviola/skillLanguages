@@ -1,8 +1,8 @@
 // Layer 4 — Frontend API client (Fetch, 30s timeout, device id header).
-import type { UserProfile, Feedback, Plan, Week, Locale } from "./types";
+import type { UserProfile, Feedback, Plan, Week, Locale, WeekSummary } from "./types";
 import type { PlacementResponse } from "./schema";
 
-const OUTPUT_LANGUAGE: Record<Locale, string> = { es: "Spanish", en: "English" };
+export const OUTPUT_LANGUAGE: Record<Locale, string> = { es: "Spanish", en: "English" };
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -60,12 +60,6 @@ export interface AdaptResponse {
   adapted: boolean;
   updated_weeks: Week[];
   adaptation_note: string;
-}
-
-export interface WeekSummary {
-  week_number: number;
-  title: string;
-  milestone: string;
 }
 
 export function submitFeedback(

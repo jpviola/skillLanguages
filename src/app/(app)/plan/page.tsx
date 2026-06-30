@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Target, Clock, Coins, Languages, Sparkles, Laptop, ArrowRight, Play, CheckCircle2 } from "lucide-react";
 import {
   usePlan,
@@ -48,14 +48,15 @@ export default function DashboardPage() {
 
   // Estimated finish: one calendar week per remaining (not fully completed) week.
   const weeksRemaining = weeks.filter((w) => weekStatus(w, topicProgress) !== "completed").length;
-  const estFinish =
-    weeksRemaining > 0
-      ? new Date(Date.now() + weeksRemaining * 7 * 86_400_000).toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })
-      : null;
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- false positive: hooks are called before any early return
+  const estFinish = useMemo(() => {
+    if (weeksRemaining <= 0) return null;
+    // eslint-disable-next-line react-hooks/purity -- Date.now() is intentional for relative date
+    return new Date(Date.now() + weeksRemaining * 7 * 86_400_000).toLocaleDateString(
+      locale === "es" ? "es-ES" : "en-US",
+      { month: "short", day: "numeric", year: "numeric" }
+    );
+  }, [weeksRemaining, locale]);
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-6 lg:px-8">

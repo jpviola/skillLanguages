@@ -13,13 +13,7 @@ import {
   type PlacementResponse,
 } from "./schema";
 import { buildPromptWithFeedback } from "./prompt";
-import type { UserProfile, Feedback } from "./types";
-
-export interface WeekSummary {
-  week_number: number;
-  title: string;
-  milestone: string;
-}
+import type { UserProfile, Feedback, WeekSummary } from "./types";
 
 /**
  * Resolve the LLM to use:
@@ -63,7 +57,6 @@ const MODEL = resolveModel();
 
 /** Strip control chars and cap length to keep user text safe inside the prompt. */
 function sanitize(text: string): string {
-  // eslint-disable-next-line no-control-regex
   return text.replace(/[\u0000-\u001F]/g, " ").slice(0, 600).trim();
 }
 
@@ -234,9 +227,13 @@ REQUIREMENTS:
  * Streaming variant — emits partial objects so the UI can render weeks as they
  * arrive. Returns the streamObject result; the caller turns it into a Response.
  */
-export function streamLearningPlan(rawProfile: UserProfile, feedbackHistory: Feedback[] = []) {
+export function streamLearningPlan(
+  rawProfile: UserProfile,
+  feedbackHistory: Feedback[] = [],
+  outputLanguage = "Spanish"
+) {
   const userProfile = sanitizeProfile(rawProfile);
-  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory);
+  const { systemPrompt } = buildPromptWithFeedback(userProfile, feedbackHistory, outputLanguage);
 
   return streamObject({
     model: MODEL,
